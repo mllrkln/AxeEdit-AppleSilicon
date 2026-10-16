@@ -2,7 +2,7 @@
 
 ![Axe-Edit on Apple Silicon!](img/axe-edit-arm.png)
 
-**DISCLAIMER** This was created fully by [Reverse Engineer Anything](https://github.com/morluto/rea). I havent' had time to review the code myself yet but the basic functionality that I've tested work.
+**DISCLAIMER** This was created fully by [Reverse Engineer Anything](https://github.com/morluto/rea). I haven't had time to review the code myself yet but the basic functionality that I've tested work.
 
 A native arm64 reconstruction of the Axe-Edit 1.0 (build 191) editor for the **Axe-Fx Standard and Ultra**.
 The original binary is i386 + PowerPC only (Carbon, JUCE 1.52), so it cannot run on Apple Silicon under Rosetta 2.
