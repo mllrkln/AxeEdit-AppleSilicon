@@ -1,0 +1,10 @@
+build/
+JUCE/
+dist/
+original/
+tools/jdk-*/
+tools/ghidra_*/
+tools/gradle-home/
+tools/env.sh
+build_cfg.log
+.DS_Store
