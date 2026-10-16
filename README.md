@@ -9,10 +9,17 @@ The original binary is i386 + PowerPC only (Carbon, JUCE 1.52), so it cannot run
 
 The app is rebuilt on current JUCE and is driven by the original installer's data files, copied unchanged from
 `original/MacOS` into the bundle: skin (`Skins/Default/AE.saxey` + `AE.paxege`), configs, parameter profiles, factory banks.
+Those files belong to Fractal Audio Systems and are **not part of this repository**; see
+[The original data files](#the-original-data-files) for how to supply them.
+
+This is an independent project. It is not affiliated with, endorsed by or supported by Fractal Audio Systems.
+"Axe-Fx", "Axe-Edit" and "Axe-Manage" are names of Fractal Audio Systems and are used here only to say what the
+software works with.
 
 ## Installing Axe-Edit (for users)
 
-You don't need any programming knowledge for this. It takes about five minutes.
+You first make the installer yourself, by running a script from this repository in Terminal (see
+[Making the installer](#making-the-installer)). Installing it then takes about five minutes.
 
 ### What you need
 
@@ -20,13 +27,15 @@ You don't need any programming knowledge for this. It takes about five minutes.
   and choose **About This Mac**. The line called **Chip** should start with "Apple M". This version does not run on
   older Macs with an Intel processor.
 - **macOS 11 (Big Sur) or newer.** About This Mac shows your macOS version too.
-- **The installer file**, `Axe-Edit-arm64-1.0.191.dmg`, from whoever shared this app with you.
+- **The installer file**, `Axe-Edit-arm64-1.0.191.dmg`. You create it with `tools/make-dmg.sh` from this
+  repository, as described in [Making the installer](#making-the-installer). That needs Xcode's command-line tools,
+  CMake, Ninja, JUCE and your own copy of the original Axe-Edit data files.
 - To talk to the Axe-Fx: **a USB MIDI interface** with MIDI In and MIDI Out cables (the Axe-Fx Standard and Ultra
   have 5-pin MIDI sockets, not USB). You can still open and edit preset files without one.
 
 ### Step 1: Put the app in your Applications folder
 
-1. Double-click `Axe-Edit-arm64-1.0.191.dmg` (it is usually in your **Downloads** folder).
+1. Double-click `Axe-Edit-arm64-1.0.191.dmg` (`tools/make-dmg.sh` puts it in the `dist` folder of this repository).
    A window opens showing **Axe-Edit**, an **Applications** folder shortcut, and a short read-me.
 2. **Drag the Axe-Edit icon onto the Applications folder** in that window and let go. This copies the app to your Mac.
 3. Close the window. In the Finder sidebar, click the eject button (⏏) next to **Axe-Edit 1.0.191**.
@@ -101,22 +110,26 @@ no longer want them.
 - **"No reply from an Axe-Fx."** Check that the two MIDI cables aren't swapped, that the Axe-Fx is switched on,
   and that SysEx isn't blocked in its MIDI settings. Then choose **Connect** from the Settings menu again.
 - **Downloads or uploads stop part-way.** Use a dedicated MIDI interface rather than a MIDI port on another
-  device, don't use the Axe-Fx during the transfer, and try again. Report what happened to whoever shared the app.
+  device, don't use the Axe-Fx during the transfer, and try again. If it keeps happening, report it in the
+  repository's [Issues](https://github.com/mllrkln/AxeEdit-AppleSilicon/issues).
 
-## Making the installer (for the person sharing the app)
+## Making the installer
+
+First set up everything listed under [Building from source](#building-from-source): the build tools, JUCE and the
+original data files. Then, in Terminal, from this folder:
 
     tools/make-dmg.sh
 
 This builds the app, signs it, and writes `dist/Axe-Edit-arm64-1.0.191.dmg`, which contains the app, an
-**Applications** shortcut and a short read-me. That one file is all other people need. Send it through any
-file-sharing service; users then follow *Installing Axe-Edit* above.
+**Applications** shortcut and a short read-me. Then follow [Installing Axe-Edit](#installing-axe-edit-for-users) above.
 
 The app is signed "ad hoc" (no paid Apple Developer account), which is why users have to approve it once in
 Privacy & Security. To avoid that step, sign with a Developer ID certificate and notarize the disk image with
 `xcrun notarytool`.
 
-The app contains the data files from Fractal Audio's original Axe-Edit 1.0.191 installer. Only share it with
-people who could use the original.
+The app, and so the disk image, contains the data files from Fractal Audio's original Axe-Edit 1.0.191 installer,
+which are Fractal Audio's copyrighted files. Don't publish the disk image (for example as a GitHub release or on a
+public download page).
 
 ## Building from source
 
@@ -124,9 +137,44 @@ You need:
 
 - **Xcode** from the Mac App Store (or just its command-line tools: run `xcode-select --install` in Terminal).
 - **CMake** 3.22 or newer and **Ninja**, for example via [Homebrew](https://brew.sh): `brew install cmake ninja`.
-- This folder, which already includes JUCE 8.0.4 (`JUCE/`) and the original installer's data (`original/`).
+- **JUCE 8.0.4** in a folder called `JUCE` inside this one. From this folder, run:
 
-Then, in Terminal, from this folder:
+      git clone --depth 1 --branch 8.0.4 https://github.com/juce-framework/JUCE.git JUCE
+
+- **The original installer's data files** in `original/`, see the next section.
+
+### The original data files
+
+The editor needs the skin, configs, parameter profiles and factory banks from Fractal Audio's Axe-Edit 1.0 build 191
+for Mac. They are not included here because they are Fractal Audio's copyrighted files. Take them from your own copy
+of that version and arrange them like this:
+
+    original/
+      MacOS/
+        Axe-Edit_Guide.pdf
+        Axe-Manage_Guide.pdf
+        EditorLicense.txt
+        EditorReadme.txt
+        Banks/Axe-Fx II/Axe-Fx II Bank A.syx, ...Bank B.syx, ...Bank C.syx
+        Banks/Standard/BankA.syx, BankB.syx
+        Banks/Ultra/Ultra_BankA.syx, Ultra_BankB.syx, Ultra_BankC.syx
+        Configs/II/default.axeml
+        Configs/Standard/default.axeml
+        Configs/Ultra/default.axeml
+        Profiles/II/default.profile
+        Profiles/Standard/default.profile
+        Profiles/Ultra/default.profile
+        Skins/Default/AE.paxege, AE.saxey, AM.paxege, AM.saxey
+      Resources/
+        icon.png
+
+In the original application these are the data files next to the program in `Axe-Edit.app/Contents/MacOS` and
+the icon in `Contents/Resources` (in Finder, right-click the app and choose **Show Package Contents**). Leave out the
+original program file itself: everything in `original/MacOS` is copied into the new app.
+
+### Building
+
+In Terminal, from this folder:
 
     cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
     cmake --build build
@@ -261,3 +309,16 @@ chunks `{id, count, values…}` ending with id 0. Chunk ids 1–16 are modifiers
 is the profile's `paramID`.
 
 `.stf` skin fonts are zlib-compressed JUCE 1.52 `CustomTypeface` streams with 16-bit character codes.
+
+## License
+
+The source code in this repository (`Source/`, `CMakeLists.txt`, `tools/`) is free software: you can redistribute it
+and/or modify it under the terms of the GNU Affero General Public License version 3, as published by the Free
+Software Foundation. See [LICENSE](LICENSE). It is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+The AGPLv3 is required because the app is built on [JUCE](https://juce.com), which is licensed under the AGPLv3
+or a commercial JUCE licence.
+
+The license does not cover Fractal Audio's data files (`original/`), which are not part of this repository and
+remain under Fractal Audio's own license terms.
